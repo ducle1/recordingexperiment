@@ -1,18 +1,20 @@
 // Service worker: ưu tiên mạng (luôn lấy bản mới nhất sau mỗi lần deploy),
-// chỉ dùng bản đã lưu khi mất mạng.
+// chỉ dùng bản đã lưu khi mất mạng. Đường dẫn tính theo vị trí của chính file này,
+// nên chạy được cả ở gốc tên miền lẫn trong thư mục con.
 
-const CACHE = 'so-ghi-am-v1';
+const CACHE = 'so-ghi-am-v2';
+const BASE = new URL('./', self.location).href;
 const SHELL = [
-  '/',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/format.js',
-  '/js/storage.js',
-  '/js/wav.js',
-  '/manifest.webmanifest',
-  '/icons/icon.svg',
-  '/icons/icon-192.png',
-];
+  './',
+  'css/styles.css',
+  'js/format.js',
+  'js/storage.js',
+  'js/wav.js',
+  'js/app.js',
+  'manifest.webmanifest',
+  'icons/icon.svg',
+  'icons/icon-192.png',
+].map(p => new URL(p, BASE).href);
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -45,7 +47,7 @@ self.addEventListener('fetch', event => {
       })
       .catch(() =>
         caches.match(req, { ignoreSearch: true })
-          .then(hit => hit || (req.mode === 'navigate' ? caches.match('/') : Response.error()))
+          .then(hit => hit || (req.mode === 'navigate' ? caches.match(BASE) : Response.error()))
       )
   );
 });

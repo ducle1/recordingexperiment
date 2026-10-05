@@ -8,15 +8,19 @@
 <meta name="theme-color" content="#e8eeee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0c1315" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-title" content="Ghi Âm">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
-<link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<!-- Mọi đường dẫn đều tương đối: chạy được ở gốc tên miền, trong thư mục con, và khi mở file trực tiếp -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,700..800&family=Be+Vietnam+Pro:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/css/styles.css">
-<script type="module" src="/js/app.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<script defer src="js/format.js"></script>
+<script defer src="js/storage.js"></script>
+<script defer src="js/wav.js"></script>
+<script defer src="js/app.js"></script>
 </head>
 <body>
 <main class="wrap">
