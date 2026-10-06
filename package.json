@@ -1,0 +1,14 @@
+{
+  "name": "recording-experiment",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build-stimuli.mjs",
+    "dev": "node scripts/build-stimuli.mjs && LOCAL_STORE_DIR=${LOCAL_STORE_DIR:-.data} ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin} node dev-server.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.1"
+  }
+}

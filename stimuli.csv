@@ -1,0 +1,22 @@
+item_id,group,group_label,sentence
+BL1,baseline,(Upper-) closed adjectives (baseline),The glass on the table is totally full of juice.
+BL2,baseline,(Upper-) closed adjectives (baseline),The downtown office will be totally closed for the holidays.
+BL3,baseline,(Upper-) closed adjectives (baseline),The mountain water was totally pure and safe to drink.
+BL4,baseline,(Upper-) closed adjectives (baseline),The laundry on the line is totally dry by now.
+BL5,baseline,(Upper-) closed adjectives (baseline),The kitchen floor looked totally clean after she swept it.
+BL6,baseline,(Upper-) closed adjectives (baseline),The tiny ink mark became totally invisible at night.
+EX1,extreme,Extreme adjectives,The weekend trip to the coast was totally wonderful for us.
+EX2,extreme,Extreme adjectives,She looked totally gorgeous in that white dress.
+EX3,extreme,Extreme adjectives,The traffic jam was totally awful this afternoon.
+EV1,evaluative,(Other) general evaluative adjectives (relative),The view from the mountain peak looked totally beautiful at sunset.
+EV2,evaluative,(Other) general evaluative adjectives (relative),The new student is totally kind to me.
+EV3,evaluative,(Other) general evaluative adjectives (relative),The mistake in the email draft seemed totally dumb to me.
+DM1,dimensional,Dimensional adjectives (relative),The line at the post office was totally long this Friday morning.
+DM2,dimensional,Dimensional adjectives (relative),The leather jacket from the online store is totally big on him.
+DM3,dimensional,Dimensional adjectives (relative),The new boy on the basketball team is totally tall for his age.
+SH1,should,Should totally + VP,She should totally go to that party.
+SH2,should,Should totally + VP,You should totally take that job.
+SH3,should,Should totally + VP,You should totally listen to me on this. I've been there.
+MU1,must,Must totally + VP,It must totally be freezing outside.
+MU2,must,Must totally + VP,She must totally know the answer to that easy question.
+MU3,must,Must totally + VP,You must totally be exhausted after that long flight.

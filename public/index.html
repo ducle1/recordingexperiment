@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f5f2">
+<meta name="robots" content="noindex">
+<title>Speaking Study</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css?v=1">
+</head>
+<body>
+<div id="progress" hidden><div id="progress-bar"></div></div>
+
+<main id="main">
+
+  <!-- Loading -->
+  <section class="screen active" id="s-loading">
+    <p class="muted center">Loading…</p>
+  </section>
+
+  <!-- 1. Welcome + consent -->
+  <section class="screen" id="s-welcome">
+    <div class="card">
+      <p class="eyebrow">Research study</p>
+      <h1>Speaking Study</h1>
+      <p>Thank you for taking part. In this study you will read <strong><span class="n-total">21</span> short English sentences</strong> aloud, one at a time, and your voice will be recorded.</p>
+      <p>It takes about <strong>10 minutes</strong>. Please sit somewhere quiet and use the same device from start to finish.</p>
+      <p>If you close the page by accident, open the same link again in the same browser and you will continue where you left off.</p>
+      <div id="env-warning" class="notice" hidden></div>
+      <label class="check">
+        <input type="checkbox" id="consent">
+        <span>I agree to take part, and I agree that my voice is recorded and stored for research purposes.</span>
+      </label>
+      <div class="actions"><button class="btn primary" id="btn-welcome" disabled>Continue</button></div>
+    </div>
+  </section>
+
+  <!-- 2. Demographics (optional) -->
+  <section class="screen" id="s-demo">
+    <div class="card">
+      <h1>About you</h1>
+      <p class="muted">These questions are optional. You may skip them.</p>
+      <form id="demo-form" autocomplete="off" novalidate>
+        <label class="field">
+          <span>Age</span>
+          <input type="number" name="age" min="1" max="120" inputmode="numeric" placeholder="e.g. 25">
+        </label>
+        <label class="field">
+          <span>Country of residence</span>
+          <select name="country" id="f-country"></select>
+        </label>
+        <label class="field" id="state-field">
+          <span id="state-label">State</span>
+          <select name="state_select" id="f-state-select"></select>
+          <input type="text" name="state_text" id="f-state-text" placeholder="State / province / region" hidden>
+        </label>
+        <label class="field">
+          <span>City</span>
+          <input type="text" name="city" maxlength="120" placeholder="e.g. Austin">
+        </label>
+        <div class="actions">
+          <button type="button" class="btn ghost" id="btn-skip">Skip</button>
+          <button type="submit" class="btn primary" id="btn-demo">Continue</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 3. Microphone check -->
+  <section class="screen" id="s-mic">
+    <div class="card">
+      <h1>Microphone check</h1>
+      <div id="mic-ask">
+        <p>Your browser will ask for permission to use the microphone. Please choose <strong>Allow</strong>.</p>
+        <div class="actions"><button class="btn primary" id="btn-mic">Allow microphone</button></div>
+      </div>
+      <div id="mic-live" hidden>
+        <p>Say a few words, for example: <em>“Hello, this is a test.”</em></p>
+        <div class="meter big" aria-hidden="true"><div class="meter-fill" id="mic-meter"></div></div>
+        <p class="heard" id="mic-heard" aria-live="polite">Listening…</p>
+        <ul class="tips">
+          <li>Sit about 20–30&nbsp;cm (8–12&nbsp;inches) from the microphone.</li>
+          <li>Keep the same distance for every sentence.</li>
+        </ul>
+        <div class="actions"><button class="btn primary" id="btn-mic-ok" disabled>Continue</button></div>
+      </div>
+      <div id="mic-error" class="notice" hidden></div>
+    </div>
+  </section>
+
+  <!-- 4. Instructions -->
+  <section class="screen" id="s-instructions">
+    <div class="card">
+      <h1>How it works</h1>
+      <ol class="steps">
+        <li>Read the sentence to yourself first.</li>
+        <li>Press <span class="pill rec">Record</span> and read the sentence aloud once, naturally, as if you were saying it to a friend.</li>
+        <li>Press <span class="pill">Stop &amp; save</span>. Your recording is saved and the next sentence appears.</li>
+      </ol>
+      <p class="muted">If you stumble, press <strong>Restart</strong> and read the sentence again from the beginning.</p>
+      <p class="muted k-only">Tip: you can also press <kbd>Space</kbd> to start and to stop.</p>
+      <div class="actions"><button class="btn primary big" id="btn-start">Start</button></div>
+    </div>
+  </section>
+
+  <!-- Resume -->
+  <section class="screen" id="s-resume">
+    <div class="card">
+      <h1>Welcome back</h1>
+      <p>You will continue from <strong id="resume-pos"></strong>.</p>
+      <p class="muted">Sentences you saved before are kept. The sentence you had not saved will be shown again.</p>
+      <div id="resume-error" class="notice" hidden></div>
+      <div class="actions"><button class="btn primary big" id="btn-resume">Continue</button></div>
+    </div>
+  </section>
+
+  <!-- 5. Trial -->
+  <section class="screen" id="s-trial">
+    <div class="stage" id="stage">
+      <p class="count" id="count"></p>
+      <figure class="illus" id="illus" hidden><img id="illus-img" alt=""></figure>
+      <p class="sentence" id="sentence"></p>
+      <p class="trial-msg" id="trial-msg" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- Error -->
+  <section class="screen" id="s-error">
+    <div class="card">
+      <h1>Connection problem</h1>
+      <p id="err-msg">Your recording could not be saved.</p>
+      <p class="muted">Your recording is still on this page. Check your internet connection, then try again.</p>
+      <div class="actions"><button class="btn primary" id="btn-retry">Try again</button></div>
+    </div>
+  </section>
+
+  <!-- 6. Done -->
+  <section class="screen" id="s-done">
+    <div class="card center">
+      <div class="done-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22"/><path d="M14 25l7 7 13-15"/></svg>
+      </div>
+      <h1>Thank you!</h1>
+      <p>You have completed the study. All your recordings are saved.</p>
+      <p>Your completion code:</p>
+      <p class="code" id="done-code"></p>
+      <div class="actions center" id="done-actions" hidden>
+        <a class="btn primary" id="done-link" href="#">Return to finish</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Recording dock: always at the bottom of the screen during the trials -->
+<div class="dock" id="dock" hidden>
+  <div class="dock-inner">
+    <div class="dock-status">
+      <span class="live-dot" id="live-dot" aria-hidden="true"></span>
+      <span id="dock-label">Microphone on</span>
+      <span class="timer" id="timer"></span>
+    </div>
+    <div class="meter" aria-hidden="true"><div class="meter-fill" id="meter"></div></div>
+    <div class="dock-buttons">
+      <button class="btn side" id="btn-restart" type="button" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg>
+        Restart
+      </button>
+      <button class="rec-btn" id="btn-rec" type="button" aria-label="Record">
+        <span class="rec-glyph" aria-hidden="true"></span>
+        <span class="rec-text" id="rec-text">Record</span>
+      </button>
+      <button class="btn side" id="btn-save-anyway" type="button" hidden>Save anyway</button>
+    </div>
+    <p class="dock-hint k-only" id="dock-hint"><kbd>Space</kbd> to start / stop</p>
+  </div>
+</div>
+
+<script src="/assets/app.js?v=1"></script>
+</body>
+</html>
