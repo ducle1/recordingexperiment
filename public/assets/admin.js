@@ -22,6 +22,28 @@
     try { localStorage.removeItem('rec_pid'); localStorage.removeItem('rec_done'); } catch (_) { /* bỏ qua */ }
   }));
 
+  // Xoá toàn bộ: chỉ bật nút khi đã gõ XOA, hỏi lại lần cuối trước khi gửi
+  const plainUpper = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'D').trim().toUpperCase();
+  $$('form[data-delete-all]').forEach((f) => {
+    const input = $('input[name=confirm]', f);
+    const btn = $('button[type=submit]', f);
+    const label = () => {
+      const mode = $('input[name=mode]:checked', f).value;
+      btn.textContent = mode === 'recordings' ? `Xoá ${f.dataset.recs} bản ghi` : `Xoá ${f.dataset.people} người và ${f.dataset.recs} bản ghi`;
+    };
+    label();
+    f.addEventListener('change', label);
+    input.addEventListener('input', () => { btn.disabled = plainUpper(input.value) !== 'XOA'; });
+    f.addEventListener('submit', (e) => {
+      if (plainUpper(input.value) !== 'XOA' || !confirm(btn.textContent + '? Không khôi phục được.')) { e.preventDefault(); return; }
+      btn.disabled = true;
+      btn.textContent = 'Đang xoá…';
+    });
+  });
+
+  // Thông báo "Đã xoá…" chỉ hiện 1 lần: bỏ tham số khỏi địa chỉ để tải lại trang không hiện lại
+  if (/[?&]deleted=/.test(location.search)) history.replaceState(null, '', location.pathname);
+
   const Job = {
     el: $('#job'),
     show(text, frac) {

@@ -170,6 +170,28 @@ export default async function handler(req, res) {
         profileCache.delete(code);
         return redirect(res, body.do === 'delete' ? '/admin' : `/admin?view=p&code=${code}`);
       }
+      if (body.do === 'delete_all') {
+        if (plainUpper(body.confirm) !== 'XOA') {
+          return sendHtml(res, 400, layout('Chưa xoá', csrf, '<div class="panel"><h1>Chưa xoá gì</h1><p>Bạn cần gõ đúng chữ <b>XOA</b> vào ô xác nhận.</p><p><a href="/admin#xoa-du-lieu">← Quay lại</a></p></div>'));
+        }
+        const files = await listFiles('p/');
+        const wavs = files.filter((f) => f.pathname.endsWith('.wav'));
+        const people = new Set(files.map((f) => f.pathname.split('/')[1]).filter((c) => CODE_RE.test(c || '')));
+        if (body.mode === 'recordings') {
+          await delFiles(wavs.map((f) => f.pathname));
+          // Đánh dấu đã xoá để trình duyệt của người tham gia quên các câu "đã lưu" trước đó
+          const touched = [...new Set(wavs.map((f) => f.pathname.split('/')[1]))];
+          await mapLimit(touched, 8, async (c) => {
+            const prof = await getJson(profilePath(c));
+            if (prof) await putJson(profilePath(c), { ...prof, reset_count: (prof.reset_count || 0) + 1, reset_at: new Date().toISOString() });
+          });
+        } else {
+          await delFiles(files.map((f) => f.pathname));
+        }
+        profileCache.clear();
+        const q = new URLSearchParams({ deleted: String(wavs.length), people: String(people.size), mode: body.mode === 'recordings' ? 'recordings' : 'everything' });
+        return redirect(res, '/admin?' + q.toString());
+      }
       return redirect(res, '/admin');
     }
 
@@ -268,7 +290,7 @@ async function adminApi(req, res, url, action, csrf) {
 
 /* ---------------------------------------------------------- layout */
 
-function layout(title, csrf, content, { scripts = true } = {}) {
+function layout(title, csrf, content, { scripts = true, flash = '' } = {}) {
   const loggedIn = csrf !== null;
   return `<!doctype html>
 <html lang="vi">
@@ -309,6 +331,7 @@ ${loggedIn ? `<header class="top">
 </header>
 <div class="job" id="job" hidden><span id="job-text"></span><span class="job-bar"><span id="job-bar"></span></span></div>` : ''}
 <main class="wrap">
+${flash ? `<p class="flash">${h(flash)}</p>` : ''}
 ${content}
 </main>
 ${loggedIn && scripts ? '<script src="/assets/admin.js?v=1" defer></script>' : ''}
@@ -337,7 +360,7 @@ function shortGroup(s) {
     baseline: 'Baseline', extreme: 'Extreme', evaluative: 'Evaluative', dimensional: 'Dimensional', should: 'Should + VP', must: 'Must + VP',
   })[s.group] || s.group_label;
 }
-const fmtBytes = (b) => (b >= 1e9 ? (b / 1e9).toFixed(2) + ' GB' : b >= 1e6 ? (b / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' KB');
+const fmtBytes = (b) => (!b ? '0 KB' : b >= 1e9 ? (b / 1e9).toFixed(2) + ' GB' : b >= 1e6 ? (b / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' KB');
 const fmtSec = (ms) => (ms === null || ms === undefined ? '' : (ms / 1000).toFixed(1).replace('.', ',') + ' s');
 function demoText(d) {
   if (!d) return '';
@@ -398,7 +421,43 @@ async function viewHome(url, csrf) {
       <thead><tr><th>Mã</th><th>Trạng thái</th><th>Tiến độ</th><th>Thiết bị</th><th>Thông tin</th><th>Bắt đầu</th><th>Hoạt động cuối</th><th class="r">Thời gian làm</th></tr></thead>
       <tbody>${rows || `<tr class="static"><td colspan="8" class="empty">${all.length ? 'Không có ai trong mục này.' : 'Chưa có người tham gia nào. Gửi link trang chính cho người tham gia, hoặc bấm “Làm thử như người mới” để tự chạy thử.'}</td></tr>`}</tbody>
     </table></div>
-    <p class="note">“Bỏ dở” = chưa xong và không hoạt động quá ${config.abandonMinutes} phút. Người đó mở lại link trên cùng trình duyệt thì vẫn làm tiếp được từ câu chưa lưu.</p>`);
+    <p class="note">“Bỏ dở” = chưa xong và không hoạt động quá ${config.abandonMinutes} phút. Người đó mở lại link trên cùng trình duyệt thì vẫn làm tiếp được từ câu chưa lưu.</p>
+    ${all.length ? deleteAllPanel(csrf, all.length, recCount, bytes) : ''}`, { flash: flashFor(url) });
+}
+
+/** Thông báo sau khi xoá toàn bộ */
+function flashFor(url) {
+  const n = url.searchParams.get('deleted');
+  if (n === null) return '';
+  const people = Number(url.searchParams.get('people') || 0);
+  return url.searchParams.get('mode') === 'recordings'
+    ? `Đã xoá ${Number(n)} bản ghi của ${people} người tham gia. Mã và thông tin của họ vẫn giữ; ai mở lại link sẽ ghi lại từ câu 1.`
+    : `Đã xoá ${people} người tham gia và ${Number(n)} bản ghi. Danh sách đã trống, sẵn sàng thu dữ liệu mới.`;
+}
+
+function deleteAllPanel(csrf, people, recs, bytes) {
+  return `
+    <h2 class="dz-title" id="xoa-du-lieu">Xoá toàn bộ dữ liệu</h2>
+    <form method="post" action="/admin" class="panel danger-zone" data-delete-all data-people="${people}" data-recs="${recs}">
+      <input type="hidden" name="csrf" value="${h(csrf)}">
+      <input type="hidden" name="do" value="delete_all">
+      <p>Hiện có <b>${people} người tham gia</b> và <b>${recs} bản ghi</b> (${fmtBytes(bytes)}). Thao tác này <b>không khôi phục được</b>.
+        Nếu cần giữ, hãy <a href="#" data-action="zip-all">tải tất cả bản ghi (.zip)</a> và <a href="#" data-action="export-analysis">xuất CSV</a> trước.</p>
+      <label class="opt"><input type="radio" name="mode" value="everything" checked>
+        <span><b>Xoá cả người tham gia lẫn bản ghi</b><span class="tiny">Danh sách trở về trống. Dùng khi đã chạy thử xong và muốn bắt đầu thu dữ liệu thật.</span></span></label>
+      <label class="opt"><input type="radio" name="mode" value="recordings">
+        <span><b>Chỉ xoá bản ghi</b><span class="tiny">Giữ mã và thông tin người tham gia; ai mở lại link sẽ ghi lại từ câu 1.</span></span></label>
+      <div class="dz-row">
+        <input type="text" name="confirm" placeholder="Gõ XOA để xác nhận" autocomplete="off" spellcheck="false" aria-label="Gõ XOA để xác nhận">
+        <button class="btn danger" type="submit" disabled>Xoá toàn bộ</button>
+      </div>
+      <p class="tiny">Ảnh minh hoạ của các câu không bị xoá.</p>
+    </form>`;
+}
+
+/** Bỏ dấu và viết hoa: "xóa" → "XOA" */
+function plainUpper(s) {
+  return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'D').trim().toUpperCase();
 }
 
 /* ------------------------------------------------------- 1 người tham gia */

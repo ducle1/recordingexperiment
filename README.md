@@ -28,6 +28,7 @@ Người tham gia không nghe lại được bản ghi của mình. Nếu bản 
 - **Tổng quan:** số người hoàn thành, đang làm, bỏ dở và đã loại, dung lượng đã dùng, cùng danh sách người tham gia.
 - **Từng người:** thông tin, thiết bị và 21 bản ghi. Mỗi bản ghi có biểu đồ cao độ và độ lớn. Bấm vào biểu đồ để nghe từ điểm đó. Kéo chuột để chọn một đoạn, ví dụ từ *totally*, rồi xem F0 và dB riêng của đoạn đó. Các nút thao tác: tải ZIP, loại khỏi phân tích, xoá bản ghi (người đó làm lại từ câu 1), xoá người.
 - **Câu & ảnh:** danh sách câu, số bản ghi của từng câu, và chỗ tải ảnh minh hoạ lên (ảnh hiện phía trên câu khi người tham gia đọc). Bấm vào một câu để nghe bản ghi của mọi người và xem các đường cao độ chồng lên nhau, chuẩn hoá theo thời gian.
+- **Xoá toàn bộ dữ liệu** (cuối trang Tổng quan): xoá cả người tham gia lẫn bản ghi, hoặc chỉ xoá bản ghi và giữ người tham gia. Phải gõ `XOA` để xác nhận. Ảnh minh hoạ không bị xoá.
 - **Xuất dữ liệu:** CSV kèm phân tích (F0 trung bình, trung vị, thấp, cao, độ lệch chuẩn, biên độ theo semitone, độ lớn trung bình và cao nhất, thời điểm bắt đầu và kết thúc lời nói), CSV danh sách bản ghi, CSV người tham gia, và ZIP toàn bộ file WAV.
 
 **Phân tích chạy ngay trong trình duyệt của admin**, có lưu đệm nên lần sau mở nhanh hơn.

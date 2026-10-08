@@ -167,6 +167,19 @@ table.sentences td { vertical-align: middle; }
 .overlay-head .seg button { border: 0; background: #fff; padding: 5px 10px; font: inherit; font-size: 12.5px; cursor: pointer; color: var(--muted); }
 .overlay-head .seg button.on { background: var(--accent); color: #fff; }
 
+/* ---------- xoá toàn bộ */
+.flash { background: var(--ok-bg); color: var(--ok); border-radius: 8px; padding: 10px 14px; margin: 0 0 14px; font-weight: 550; }
+.dz-title { margin: 36px 0 10px; color: var(--bad); }
+.danger-zone { border-color: #efc9c5; display: grid; gap: 10px; max-width: 760px; }
+.danger-zone p { margin: 0; }
+.danger-zone .opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.danger-zone .opt:has(input:checked) { border-color: var(--bad); background: #fffafa; }
+.danger-zone .opt input { margin: 3px 0 0; accent-color: var(--bad); }
+.danger-zone .opt .tiny { display: block; margin-top: 2px; }
+.dz-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.dz-row input { font: inherit; padding: 8px 10px; border: 1px solid #cfcfc9; border-radius: 7px; min-width: 220px; }
+.dz-row .btn.danger:not(:disabled) { background: var(--bad); border-color: var(--bad); color: #fff; }
+
 /* ---------- đăng nhập */
 .login { min-height: 80vh; display: flex; align-items: center; justify-content: center; }
 .login form { width: 340px; }
@@ -189,4 +202,5 @@ table.sentences td { vertical-align: middle; }
   h1 { font-size: 19px; }
   .big { font-size: 26px; }
   .rec-head .meta-line { margin-left: 0; width: 100%; }
+  .dz-row input { min-width: 0; flex: 1; }
 }
